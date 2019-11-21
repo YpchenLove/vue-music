@@ -1,8 +1,12 @@
 <template>
-  <div class="singer"></div>
+  <div class="singer">
+    <list-view class="listview" :data="singers"></list-view>
+  </div>
 </template>
 
 <script>
+import ListView from 'base/listview/listview'
+
 import { getSingerList } from 'api/singer'
 import { ERR_OK } from 'api/config'
 import Singer from 'common/js/singer'
@@ -11,6 +15,9 @@ const HOT_NAME = '热门'
 const HOT_SINGER_LEN = 10
 
 export default {
+  components: {
+    ListView
+  },
   data() {
     return {
       singers: []
@@ -20,13 +27,11 @@ export default {
     this._getSingerList()
   },
   methods: {
-    _getSingerList() {
-      getSingerList().then(res => {
-        if (res.code === ERR_OK) {
-          this.singers = res.data.list
-          this._normalizeSinger(this.singers)
-        }
-      })
+    async _getSingerList() {
+      const res = await getSingerList()
+      if (res.code === ERR_OK) {
+        this.singers = this._normalizeSinger(res.data.list)
+      }
     },
     _normalizeSinger(list) {
       let map = {

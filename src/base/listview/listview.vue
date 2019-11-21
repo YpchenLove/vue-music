@@ -1,5 +1,10 @@
 <template>
-  <scroll class="listview" ref="listview" :data="data">
+  <scroll class="listview"
+          ref="listview"
+          :data="data"
+          :listenScroll="listenScroll"
+          :probeType="3"
+          @scroll="scroll">
     <ul>
       <li v-for="group in data" class="list-group" ref="listGroup" :key="group.title">
         <h2 class="list-group-title">{{ group.title }}</h2>
@@ -11,13 +16,14 @@
         </ul>
       </li>
     </ul>
-    <div class="list-shortcut" @touchstart="onShortcutTouchStart">
+    <div class="list-shortcut" @touchstart="onShortcutTouchStart" @touchmove.stop.prevent="onShortcutTouchMove" @touchend.stop>
       <ul>
         <li
           class="item"
           v-for="(item, index) in shortcutList"
           :key="index"
           :data-index="index"
+          :class="{'current': currentIndex == index}"
         >{{ item }}</li>
       </ul>
     </div>
@@ -27,6 +33,8 @@
 <script>
 import Scroll from 'base/scroll/scroll'
 import { getData } from 'common/js/dom.js'
+
+const ANCHOR_HEIGHT = 18
 export default {
   components: {
     Scroll
@@ -39,6 +47,17 @@ export default {
       }
     }
   },
+  data() {
+    return {
+      scrollY: -1,
+      currentIndex: 0
+    }
+  },
+  created() {
+    this.listenScroll = true
+    this.touch = {}
+    this.listHeight = []
+  },
   computed: {
     shortcutList() {
       return this.data.map(group => {
@@ -49,8 +68,59 @@ export default {
   methods: {
     onShortcutTouchStart(e) {
       let anchorIndex = getData(e.target, 'index')
+      let firstTouch = e.touches[0]
+      this.touch.y1 = firstTouch.pageY
+      this.touch.anchorIndex = anchorIndex
+      this._scrollTo(anchorIndex)
+    },
+    onShortcutTouchMove(e) {
+      let firstTouch = e.touches[0]
+
+      this.touch.y2 = firstTouch.pageY
+      let delta = (this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT | 0
+      let anchorIndex = parseInt(this.touch.anchorIndex) + delta
       console.log(anchorIndex)
-      this.$refs.listview.scrollToElement(this.$refs.listGroup[anchorIndex], 0)
+
+      this._scrollTo(anchorIndex)
+    },
+    scroll(pos) {
+      this.scrollY = pos.y
+    },
+    _scrollTo(index) {
+      this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0)
+      this.scrollY = this.$refs.listview.scroll.y
+    },
+    _calculateHeight() {
+      this.listHeight = []
+      const list = this.$refs.listGroup
+      let height = 0
+      this.listHeight.push(height)
+      for (let i = 0; i < list.length; i++) {
+        let item = list[i]
+        height += item.clientHeight
+        this.listHeight.push(height)
+      }
+      console.log(this.listHeight)
+    }
+  },
+  watch: {
+    data() {
+      setTimeout(() => {
+        this._calculateHeight()
+      }, 20)
+    },
+    scrollY(newY) {
+      const listHeight = this.listHeight
+      for (let i = 0; i < listHeight.length; i++) {
+        let height1 = listHeight[i]
+        let height2 = listHeight[i + 1]
+        console.log(height1, height2)
+        if (!height2 || (-newY > height1 && -newY < height2)) {
+          this.currentIndex = i
+          return
+        }
+      }
+      // this.currentIndex = 0
     }
   }
 }
@@ -113,4 +183,21 @@ export default {
 
       &.current
         color $color-theme
+  .list-fixed
+      position: absolute
+      top: 0
+      left: 0
+      width: 100%
+      .fixed-title
+        height: 30px
+        line-height: 30px
+        padding-left: 20px
+        font-size: $font-size-small
+        color: $color-text-l
+        background: $color-highlight-background
+    .loading-container
+      position: absolute
+      width: 100%
+      top: 50%
+      transform: translateY(-50%)
 </style>

@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import Recommend from '@/views/recommend/recommend'
 import Singer from '@/views/singer/singer'
 import Search from '@/views/search/search'
-
+import Rank from '../views/rank/rank.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -27,7 +27,8 @@ export default new Router({
     {
       path: '/rank',
       name: 'Rank',
-      component: () => import(/* webpackChunkName: "rank" */ '../views/rank/rank.vue')
+      component: Rank
+      // component: () => import(/* webpackChunkName: "rank" */ '../views/rank/rank.vue')
     },
     {
       path: '/search',

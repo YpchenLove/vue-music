@@ -1,16 +1,20 @@
 <template>
   <transition name="slide" appear>
-    <div class="singer-detail">{{ singer.name }}</div>
+    <music-list></music-list>
   </transition>
 </template>
 
 <script>
+import { MusicList } from 'components/music-list/music-list'
 import { mapGetters } from 'vuex'
 import { getSingerDetail } from 'api/singer'
 import { createSong } from 'common/js/song'
 import { ERR_OK } from 'api/config'
 
 export default {
+  components: {
+    MusicList
+  },
   computed: {
     ...mapGetters(['singer'])
   },

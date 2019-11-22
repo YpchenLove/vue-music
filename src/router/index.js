@@ -1,13 +1,17 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+
+// page
 import Recommend from '@/views/recommend/recommend'
 import Singer from '@/views/singer/singer'
+import SingerDetail from '@/views/singer-detail/singer-detail'
 import Search from '@/views/search/search'
-import Rank from '../views/rank/rank.vue'
+import Rank from '@/views/rank/rank.vue'
+
 Vue.use(Router)
 
 export default new Router({
-  mode: 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   routes: [
     {
@@ -22,7 +26,13 @@ export default new Router({
     {
       path: '/singer',
       name: 'Singer',
-      component: Singer
+      component: Singer,
+      children: [
+        {
+          path: ':id',
+          component: SingerDetail
+        }
+      ]
     },
     {
       path: '/rank',

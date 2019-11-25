@@ -1,11 +1,11 @@
 <template>
   <transition name="slide" appear>
-    <music-list></music-list>
+    <music-list :title="title" :bgImage="bgImage" :songs="songs"></music-list>
   </transition>
 </template>
 
 <script>
-import { MusicList } from 'components/music-list/music-list'
+import MusicList from 'components/music-list/music-list'
 import { mapGetters } from 'vuex'
 import { getSingerDetail } from 'api/singer'
 import { createSong } from 'common/js/song'
@@ -16,6 +16,14 @@ export default {
     MusicList
   },
   computed: {
+    title() {
+      return this.singer.name
+    },
+    bgImage() {
+      return `https://y.gtimg.cn/music/photo_new/T001R500x500M000${
+        this.singer.id
+      }.jpg`
+    },
     ...mapGetters(['singer'])
   },
   created() {

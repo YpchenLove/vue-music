@@ -1,6 +1,6 @@
 <template>
   <div class="singer">
-    <list-view class="listview" :data="singers" @select="selectSinger"></list-view>
+    <list-view :data="singers" @select="selectSinger"></list-view>
     <router-view></router-view>
   </div>
 </template>
@@ -30,6 +30,7 @@ export default {
   },
   methods: {
     selectSinger(singer) {
+      console.log('跳转')
       this.$router.push({
         path: `/singer/${singer.id}`
       })

@@ -3,8 +3,9 @@
     <m-header />
     <tab />
     <keep-alive>
-      <router-view/>
+      <router-view />
     </keep-alive>
+    <!-- <player></player> -->
   </div>
 </template>
 
@@ -17,14 +18,12 @@ export default {
     MHeader,
     Tab
   }
-
 }
 </script>
 
 <style scoped lang="stylus">
-@import "./common/stylus/variable"
+@import './common/stylus/variable'
 
 #app
-  color: $color-theme
-
+  color $color-theme
 </style>

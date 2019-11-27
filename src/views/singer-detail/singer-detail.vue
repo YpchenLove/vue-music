@@ -37,9 +37,7 @@ export default {
   methods: {
     async _getDetail() {
       if (!this.singer.id) {
-        this.$router.push({
-          push: '/singer'
-        })
+        this.$router.push('/singer')
       }
       const res = await getSingerDetail(this.singer.id)
       if (res.code === ERR_OK) {

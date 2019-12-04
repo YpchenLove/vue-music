@@ -121,7 +121,9 @@ export default {
     scroll(pos) {
       this.scrollY = pos.y
     },
-    selectItem() {},
+    selectItem(song, index) {
+      console.log(song, index)
+    },
     back() {
       this.$router.back()
     },

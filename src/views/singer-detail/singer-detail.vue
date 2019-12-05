@@ -52,6 +52,7 @@ export default {
           ret.push(createSong(musicData))
         }
       })
+      console.log(ret)
       return ret
     }
   }

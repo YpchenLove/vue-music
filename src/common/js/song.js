@@ -42,10 +42,9 @@ export function createSong(musicData) {
     album: musicData.albumname,
     duration: musicData.interval,
     image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`,
-    url: 'http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/${musicData.filename}?guid=4107028941&vkey=BF6CD65A44A986CF3AC6257D417D2E12D2808EE33EBF1F206EA60646C21224BCEB6CFE13824D3E17BD2094D3FDB6E29FCA81A6857F1A08AC&uin=0&fromtag=38'
+    url: `http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/C400${musicData.songmid}.m4a?guid=4107028941&vkey=BF6CD65A44A986CF3AC6257D417D2E12D2808EE33EBF1F206EA60646C21224BCEB6CFE13824D3E17BD2094D3FDB6E29FCA81A6857F1A08AC&uin=0&fromtag=38`
   })
 }
-// 
 
 function filterSinger(singer) {
   let ret = []
@@ -82,6 +81,7 @@ export function processSongsUrl(songs) {
       }
       return false
     })
+    console.log('songs', songs)
     return songs
   })
 }

@@ -28,17 +28,22 @@
           </div>
         </div>
         <div class="bottom">
+          <div class="progress-wrapper">
+            <span class="time time-l">{{ format(currentTime) }}</span>
+            <div class="progress-bar-wrapper"></div>
+            <span class="time time-r">{{ format(currentSong.duration) }}</span>
+          </div>
           <div class="operators">
             <div class="icon i-left">
               <i class="icon-sequence"></i>
             </div>
-            <div class="icon i-left" @click="prev">
+            <div class="icon i-left" :class="disableCls" @click="prev">
               <i class="icon-prev"></i>
             </div>
-            <div class="icon i-center">
+            <div class="icon i-center" :class="disableCls">
               <i @click="togglePlaying" :class="playIcon"></i>
             </div>
-            <div class="icon i-right" @click="next">
+            <div class="icon i-right" :class="disableCls" @click="next">
               <i class="icon-next"></i>
             </div>
             <div class="icon i-right">
@@ -66,7 +71,13 @@
         </div>
       </div>
     </transition>
-    <audio ref="audio" :src="currentSong.url"></audio>
+    <audio
+      ref="audio"
+      :src="currentSong.url"
+      @playing="ready"
+      @error="error"
+      @timeupdate="updateTime"
+    ></audio>
   </div>
 </template>
 
@@ -79,6 +90,12 @@ const transform = prefixStyle('transform')
 
 export default {
   name: 'player',
+  data() {
+    return {
+      songReady: false,
+      currentTime: 0
+    }
+  },
   computed: {
     cdCls() {
       return this.playing ? 'play' : 'play pause'
@@ -88,6 +105,9 @@ export default {
     },
     miniIcon() {
       return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
+    },
+    disableCls() {
+      return this.songReady ? '' : 'disable'
     },
     ...mapGetters([
       'fullScreen',
@@ -102,19 +122,47 @@ export default {
       this.setPlayingState(!this.playing)
     },
     next() {
+      if (!this.songReady) {
+        return
+      }
       let index = this.currentIndex + 1
       if (index === this.playlist.length) {
         index = 0
       }
       this.setCurrentIndex(index)
-      // if ()
+      if (!this.playing) {
+        this.togglePlaying()
+      }
+      this.songReady = false
     },
     prev() {
+      if (!this.songReady) {
+        return
+      }
       let index = this.currentIndex - 1
       if (index === -1) {
         index = this.playlist.length - 1
       }
       this.setCurrentIndex(index)
+      if (!this.playing) {
+        this.togglePlaying()
+      }
+      this.songReady = false
+    },
+    ready() {
+      this.songReady = true
+    },
+    error() {
+      this.songReady = true
+    },
+    updateTime(e) {
+      this.currentTime = e.target.currentTime
+    },
+    format(interval) {
+      interval = interval | 0
+      const minute = (interval / 60) | 0
+      const second = this._pad(interval % 60)
+      return `${minute}:${second}`
     },
     enter(el, done) {
       const { x, y, scale } = this._getPosAndScale()
@@ -161,6 +209,14 @@ export default {
     },
     back() {
       this.setFullScreen(false)
+    },
+    _pad(num, n = 2) {
+      let len = num.toString().length
+      while (len < n) {
+        num = '0' + num
+        len++
+      }
+      return num
     },
     _getPosAndScale() {
       const targetWidth = 40
